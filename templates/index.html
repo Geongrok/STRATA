@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STRATA — The Composite Compendium</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/strata.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-fade"></div>
+  <div class="wrap hero-inner">
+    <span class="eyebrow">Materials · Composites · Micromechanics</span>
+    <h1 class="hero-title">STRA<em>T</em>A</h1>
+    <p class="hero-sub">Every element, alloy, ceramic, polymer, and fiber — natural or synthetic — reduced to the numbers that matter. Choose two constituents. Watch a composite assemble itself, and learn exactly why it behaves the way it does.</p>
+    <button class="hero-cta" onclick="document.getElementById('forge').scrollIntoView({behavior:'smooth'})">↓ Enter the Forge</button>
+  </div>
+  <div class="scroll-hint">54 CONSTITUENTS LOADED — SCROLL TO BEGIN</div>
+</section>
+
+<!-- ATLAS -->
+<section id="atlas">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">The Atlas</span>
+      <h2>Every constituent, catalogued.</h2>
+      <p>Elements, alloys, ceramics, and polymers — natural or man-made — each with the density, stiffness, strength, thermal behaviour, and cost that governs how it performs. Search a material or pick a category to browse.</p>
+    </div>
+    <div class="atlas-search-wrap">
+      <input id="atlas-search" class="atlas-search-input" type="text" placeholder="Search by name — e.g. &quot;carbon&quot;, &quot;epoxy&quot;, &quot;flax&quot;…" autocomplete="off">
+      <span id="atlas-search-clear" class="atlas-search-clear" title="Clear search">✕</span>
+    </div>
+    <div class="atlas-tabs" id="atlas-tabs"></div>
+    <div id="atlas-empty" class="atlas-empty">Nothing shown yet — search a material by name, or choose a category above.</div>
+    <div class="atlas-grid" id="atlas-grid"></div>
+  </div>
+</section>
+
+<hr class="hairline">
+
+<!-- FORGE -->
+<section id="forge">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">The Forge</span>
+      <h2>Build a composite. See why it works.</h2>
+      <p>Pick a continuous matrix and a reinforcing phase. STRATA runs the same micromechanics used in composite-materials coursework — rule of mixtures, Halpin–Tsai, and Schapery's CTE bounds — and shows its working.</p>
+    </div>
+
+    <div class="forge-layout">
+      <div>
+        <div class="control-block">
+          <label>Matrix — the continuous, binding phase</label>
+          <select id="sel-matrix"></select>
+        </div>
+        <div class="control-block">
+          <label>Curing agent / hardener</label>
+          <div id="hardener-block"></div>
+        </div>
+
+        <div class="control-block">
+          <label>Reinforcement stack — <span class="vf-readout" id="vf-budget-readout">35% of 70% used</span></label>
+          <div id="reinforcement-list"></div>
+          <div id="add-reinf-btn" class="add-reinf-btn">+ Add another reinforcement</div>
+        </div>
+
+        <div id="verdict-box"></div>
+
+        <div class="result-block">
+          <h3>Predicted properties</h3>
+          <div class="result-sub" id="combo-label"></div>
+          <table class="prop-table" id="prop-table"></table>
+          <div class="explain-box" id="explain-box"></div>
+        </div>
+
+        <div class="result-block">
+          <h3>Testing standards this maps to</h3>
+          <div class="result-sub">How you'd verify these numbers on a bench, per ASTM</div>
+          <div class="standards-card" id="standards-card"></div>
+        </div>
+
+        <div class="result-block">
+          <h3>Behaviour under conditions</h3>
+          <div class="result-sub">Choose an environment the finished part must survive</div>
+          <div class="scenario-row" id="scenario-row"></div>
+          <div id="behavior-out"></div>
+        </div>
+
+        <div class="result-block">
+          <h3>Cost of the build</h3>
+          <div class="cost-strip"><span id="cost-lo-label">low</span><span id="cost-hi-label">high</span></div>
+          <div class="cost-bar"><div class="cost-bar-fill" id="cost-bar-fill"></div></div>
+          <div class="explain-box" id="cost-explain"></div>
+        </div>
+      </div>
+
+      <div>
+        <div id="forge-canvas-wrap">
+          <canvas id="forge-canvas"></canvas>
+          <div class="canvas-tag" id="canvas-tag">drag to rotate</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="hairline">
+
+<!-- LEDGER -->
+<section id="ledger">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Where To Buy</span>
+      <h2>Source your current build.</h2>
+      <p>Real-world retail pricing and supplier options for the materials currently loaded in the Forge above — this updates live as you change your selection.</p>
+    </div>
+    <table>
+      <thead><tr><th>Material</th><th>Category</th><th>Market Price / kg (INR)</th><th>Where to Buy It</th></tr></thead>
+      <tbody id="ledger-body"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="col">
+      <h4>Method</h4>
+      Composite properties are calculated server-side using Classical Laminate Theory (CLT) off-axis transformation, rule of mixtures for on-axis modulus, Halpin–Tsai for transverse properties, Nicolais–Narkis for particulate stress concentration, Rosen microbuckling for compressive limits, and Schapery bounds for CTE.
+    </div>
+    <div class="col">
+      <h4>Scope</h4>
+      100+ constituents spanning aerospace carbon fibers, high-temperature superalloys, advanced technical ceramics, natural fibers, structural foams, and engineering polymers. Prices are shown in Indian Rupees at ~₹96/USD.
+    </div>
+  </div>
+</footer>
+
+<!-- AI CHAT -->
+<button id="ai-chat-btn" title="STRATA AI — ask anything about materials & composites">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.03 2 11c0 2.64 1.18 5.01 3.07 6.69L4 22l4.5-1.5C9.59 21.47 10.78 22 12 22c5.52 0 10-4.03 10-9s-4.48-9-10-9zm1 13H7v-2h6v2zm2-4H7V9h8v2z"/></svg>
+</button>
+<div id="ai-chat-panel">
+  <div class="ai-panel-header">
+    <div>
+      <div class="ai-panel-title">STRATA AI — Materials Assistant</div>
+      <div class="ai-panel-ctx" id="ai-ctx-label">Reads your current Forge state</div>
+    </div>
+    <span class="ai-panel-close" id="ai-close">CLOSE ✕</span>
+  </div>
+  <div id="ai-messages">
+    <div class="ai-msg model">Hello — I'm the STRATA AI assistant. Tell me what you need your composite to do (structural load, service environment, weight target, temperature, cost) and I'll suggest the best matrix, reinforcement, and hardener from our 100+ materials database. You can also ask about ASTM testing standards, failure modes, or have me analyze your current Forge build.</div>
+  </div>
+  <div class="ai-panel-chips" id="ai-chips">
+    <button class="ai-chip" data-q="Suggest an optimal composite for an aerospace structural bracket subjected to high bending and shear">Aerospace bracket — light + stiff</button>
+    <button class="ai-chip" data-q="What matrix and reinforcement combination works best for a marine boat hull exposed to saltwater?">Marine boat hull</button>
+    <button class="ai-chip" data-q="I need a composite that can survive above 300°C continuously — what are my options?">Survive > 300°C</button>
+    <button class="ai-chip" data-q="Explain how fiber orientation affects in-plane shear modulus G12 and ASTM D3518 testing">Orientation & ASTM D3518</button>
+    <button class="ai-chip" data-q="Analyse my current Forge laminate build and explain its predicted failure mode and testing standards">Analyse my current build</button>
+  </div>
+  <div class="ai-panel-input-row">
+    <input id="ai-input" type="text" placeholder="Ask about materials, suggest a composite, explain an ASTM standard…" autocomplete="off">
+    <button id="ai-send">SEND</button>
+  </div>
+</div>
+
+<div id="detail-overlay">
+  <div id="detail-card"></div>
+</div>
+
+<!-- Modular Application Coordinator -->
+<script type="module" src="/static/js/app.js"></script>
+</body>
+</html>

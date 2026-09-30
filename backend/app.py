@@ -62,7 +62,10 @@ templates = Jinja2Templates(directory=str(templates_dir))
 async def serve_index(request: Request):
     index_file = templates_dir / "index.html"
     if index_file.exists():
-        return templates.TemplateResponse("index.html", {"request": request})
+        return templates.TemplateResponse(
+            request=request,
+            name="index.html"
+        )
     # Fallback to strata.html if templates/index.html is not yet created
     fallback_file = BASE_DIR / "strata.html"
     if fallback_file.exists():
